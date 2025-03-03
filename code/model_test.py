@@ -9,8 +9,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # 配置API客户端
 client = OpenAI(
-    api_key="22e0a307-fcf4-4029-b697-d42cde4b1733",
-    base_url="https://ark.cn-beijing.volces.com/api/v3",
+    api_key="sk-qckbdjlxsfwejnhghzimuwleeuvnvvvsqxvfcbmujknlsopm",
+    base_url="https://api.siliconflow.cn/v1",
 )
 
 # 确保输出目录存在
@@ -37,10 +37,27 @@ def load_questions(file_path="mil_questions.txt"):
 def get_model_answer(question, model_name, question_num=0):
     """使用指定模型回答问题"""
     system_prompt = """
-    您是军事指挥系统运维领域的专家。请详细回答以下问题。
-    答案必须包含具体参数（如温度范围：-40℃~71℃，加密标准：AES-256）。
-    要求答案精简简短，准确率高，包括具体的操作步骤、技术规范和军事标准要求。
-    需要重复问题内容。
+    您是军事指挥系统运维领域的专家。请根据以下问题，结合逻辑推理、技术规范和军事标准，提供详细且准确的回答。  
+    要求答案精练简洁，准确率高，体现大模型的推理能力，包含以下内容：  
+    1. **操作步骤**：清晰的执行流程。  
+    2. **技术规范**：相关技术标准或方法，不用包含数字。  
+    3. **军事标准**：适用的军事规范或要求。  
+    4. **逻辑推理**：展示问题分析、解决方案推导的过程。  
+    
+    **输出格式如下：**  
+    Q1: [问题正文]  
+    A1: [答案正文，包含操作步骤、技术规范、军事标准及逻辑推理过程]  
+    Q2: [问题正文]  
+    A2: [答案正文，包含操作步骤、技术规范、军事标准及逻辑推理过程]  
+    ...  
+    
+    **请确保回答：**  
+    1. **简明扼要**：避免冗余信息，突出重点。  
+    2. **准确无误**：符合技术规范和军事标准。  
+    3. **逻辑清晰**：展示推理过程，体现问题解决能力。  
+    4. **多样化**：针对不同类型问题，提供针对性解决方案。  
+    
+    ---
     """
 
     start_time = time.time()
@@ -51,8 +68,8 @@ def get_model_answer(question, model_name, question_num=0):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": question}
             ],
-            "temperature": 0.5,
-            "max_tokens": 1500
+            "temperature": 0.3,
+            "max_tokens": 1000
         }
 
 
@@ -127,7 +144,7 @@ def process_questions_with_model(model_name, model_display_name=None, max_worker
 
         # 写入答案（不包含问题）
         for answer_data in answers:
-            f.write(f"A{answer_data['num']}: {answer_data['answer']}\n")
+            f.write(f"{answer_data['answer']}\n")
             f.write(f"[响应时间: {answer_data['time']:.2f}秒]\n\n")
             f.write("-" * 80 + "\n\n")
 
@@ -173,13 +190,41 @@ if __name__ == "__main__":
     try:
         # 配置要测试的模型
         models_to_test = [
-            {
-                "id": "ep-20250227212251-6zq2v",  # API调用时使用的ID
-                "name": "DeepSeek-R1-Distill-Qwen-32B"  # 显示名称和文件名
-            },
 
             {
-                "id": "ep-20250218175517-6jc9n",
+                "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+                "name": "DeepSeek-R1-Distill-Qwen-7B",
+            },
+            {
+                "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
+                "name": "DeepSeek-R1-Distill-Qwen-32B",
+            },
+            {
+                "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
+                "name": "DeepSeek-R1-Distill-Qwen-14B",
+            },
+            {
+                "id": "Qwen/Qwen2.5-32B-Instruct",
+                "name": "Qwen2.5-32B-Instruct",
+            },
+            {
+                "id": "Qwen/Qwen2.5-14B-Instruct",
+                "name": "Qwen2.5-14B-Instruct",
+            },
+            {
+                "id": "Qwen/Qwen2.5-7B-Instruct",
+                "name": "Qwen2.5-7B-Instruct",
+            },
+            {
+                "id": "Qwen/QwQ-32B-Preview",
+                "name": "QwQ-32B-Preview",
+            },
+            {
+                "id": "THUDM/glm-4-9b-chat",
+                "name": "glm-4-9b-chat",
+            },
+            {
+                "id": "deepseek-ai/DeepSeek-R1",
                 "name": "deepseek-R1",
             }
         ]

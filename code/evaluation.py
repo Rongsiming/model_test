@@ -5,10 +5,9 @@ from tqdm import tqdm
 
 # 配置API客户端
 client = OpenAI(
-    api_key="22e0a307-fcf4-4029-b697-d42cde4b1733",
-    base_url="https://ark.cn-beijing.volces.com/api/v3",
+    api_key="sk-qckbdjlxsfwejnhghzimuwleeuvnvvvsqxvfcbmujknlsopm",
+    base_url="https://api.siliconflow.cn/v1",
 )
-
 
 def load_answers(file_path):
     """加载答案文件"""
@@ -54,7 +53,7 @@ def evaluate_answer(reference_answer, test_answer):
     """
 
     response = client.chat.completions.create(
-        model="ep-20250218175517-6jc9n",
+        model="deepseek-ai/DeepSeek-R1",
         messages=[
             {"role": "system", "content": "您是一个专业的模型评估系统，负责评估AI模型回答的质量。"},
             {"role": "user", "content": prompt}
@@ -69,7 +68,7 @@ def evaluate_answer(reference_answer, test_answer):
 def main():
     # 文件路径
     reference_file = r"./test_model_answer/deepseek-R1_answer.txt"
-    test_file =r"./test_model_answer/DeepSeek-R1-Distill-Qwen-32B_answer.txt"
+    test_file =r"./test_model_answer/DeepSeek-R1-Distill-Qwen-14B_answer.txt"
     # 提取测试模型名称
     test_model_name = os.path.basename(test_file).split('_')[0]
     output_file = f"./evaluation/{test_model_name}_evaluation.txt"
